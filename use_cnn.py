@@ -2,7 +2,7 @@
 # @Time    : 2018/11/28 18:04
 # @Author  : thouger
 # @Email   : 1030490158@qq.com
-# @File    : with_cnn.py
+# @File    : use_cnn.py
 # @Software: PyCharm
 
 import pandas as pd
@@ -48,8 +48,6 @@ x_train = get_keras_data(train)
 x_test = get_keras_data(test)
 y_train = train.Score.values
 
-early_stopping = EarlyStopping(monitor='val_loss', mode='min', patience=2)
-
 embed_size = 200  # emb 长度
 
 
@@ -59,7 +57,7 @@ def score(y_true, y_pred):
 
 def cnn():
     comment_seq = Input(shape=[maxlen], name='Discuss_seq')
-    emb_comment = Embedding(max_features, embed_size)(comment_seq)
+    emb_comment = Embedding(max_features, embed_size,name='embedding')(comment_seq)
 
     convs = []
     for i in range(2, 6):
@@ -80,6 +78,7 @@ batch_size=128
 epochs = 20
 model = cnn()
 model.summary()
+early_stopping = EarlyStopping(monitor='val_loss', mode='min', patience=2)
 model.fit(x_train,y_train,validation_split=0.1,batch_size=batch_size,epochs=epochs,shuffle=True,callbacks=[early_stopping])
 preds = model.predict(x_test)
 submission = pd.DataFrame(test.Id.values,columns=['Id'])
